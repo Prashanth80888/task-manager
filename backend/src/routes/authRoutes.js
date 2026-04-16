@@ -1,20 +1,12 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { register, login } from '../controllers/authController.js';
+import { register, login, getAllUsers, deleteUser } from '../controllers/authController.js'; // Added new controllers
 import validate from '../middleware/validateMiddleware.js';
+import { protect, admin } from '../middleware/authMiddleware.js'; // Added auth middlewares
 
 const router = express.Router();
 
-/**
- * @swagger
- * /api/v1/auth/register:
- * post:
- * summary: Register a new user
- * tags: [Auth]
- * responses:
- * 201:
- * description: Success
- */
+// @route   POST /api/v1/auth/register
 router.post(
   '/register',
   [
@@ -26,16 +18,7 @@ router.post(
   register
 );
 
-/**
- * @swagger
- * /api/v1/auth/login:
- * post:
- * summary: Login user
- * tags: [Auth]
- * responses:
- * 200:
- * description: Success
- */
+// @route   POST /api/v1/auth/login
 router.post(
   '/login',
   [
@@ -45,5 +28,17 @@ router.post(
   ],
   login
 );
+
+// --- ADMIN ROUTES (NEW) ---
+
+// @desc    Get all users for the Identity Ledger
+// @route   GET /api/v1/auth/admin/users
+router.get('/admin/users', protect, admin, getAllUsers);
+
+// @desc    Delete a user from the system
+// @route   DELETE /api/v1/auth/admin/users/:id
+router.delete('/admin/users/:id', protect, admin, deleteUser);
+
+// --------------------------
 
 export default router;

@@ -1,10 +1,11 @@
-// Restrict access to specific roles
 export const authorize = (...roles) => {
   return (req, res, next) => {
-    // req.user is populated by the 'protect' middleware called before this
-    if (!req.user || !roles.includes(req.user.role)) {
+    // Fallback to 'user' if role is missing for some reason
+    const userRole = req.user?.role || 'user'; 
+
+    if (!roles.includes(userRole)) {
       return res.status(403).json({
-        message: `User role '${req.user.role}' is not authorized to access this route`,
+        message: `Access Denied: Role '${userRole}' unauthorized.`,
       });
     }
     next();
